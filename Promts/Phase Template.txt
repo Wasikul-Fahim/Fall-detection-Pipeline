@@ -1,0 +1,21 @@
+We are now implementing Phase X.
+
+Before writing any code,
+
+1. Explain the software architecture for this phase.
+2. Explain why this design is chosen.
+3. Explain alternative designs and why they are rejected.
+4. Describe how this phase integrates with the rest of the framework.
+5. Explain future extensibility.
+6. Wait for my approval before writing code.
+
+When writing code
+
+- Follow professional software engineering practices.
+- Keep modules independent.
+- Use type hints.
+- Use docstrings.
+- Avoid duplicated code.
+- Keep functions small.
+- Explain every important design decision.
+- Think about future phases while implementing this one.

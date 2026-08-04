@@ -1,0 +1,99 @@
+Phase 0
+
+Project Planning
+
+✔ Completed
+
+----------------------------
+
+Phase 1
+
+Dataset Module
+
+- Dataset indexing
+- Subject splitting
+- CSV generation
+- PyTorch Dataset
+- DataLoader
+
+----------------------------
+
+Phase 2
+
+Configuration System
+
+- YAML
+- Config loader
+- Validation
+- Dynamic parameters
+
+----------------------------
+
+Phase 3
+
+Training Framework
+
+- Trainer
+- Loss
+- Optimizer
+- Scheduler
+- Checkpoint
+- Logging
+
+----------------------------
+
+Phase 4
+
+Model Factory
+
+- EfficientNet
+- ViT
+- Future model plugins
+
+----------------------------
+
+Phase 5
+
+Evaluation
+
+- Metrics
+- Confusion Matrix
+- ROC
+- PR Curve
+- Visualization
+
+----------------------------
+
+Phase 6
+
+Experiment Manager
+
+- Save experiments
+- Config snapshot
+- Metrics
+- TensorBoard
+- Reproducibility
+
+----------------------------
+
+Phase 7
+
+Anomaly Detection
+
+- PatchCore
+
+- PaDiM
+
+----------------------------
+
+Phase 8
+
+Thesis Support
+
+- Figure generation
+
+- Tables
+
+- Ablation studies
+
+- Comparison reports

@@ -1,0 +1,33 @@
+Here's the roadmap I'd recommend:
+
+Phase 1 — Dataset 
+
+- Build the dataset index from your directory tree.
+- Create subject-aware train/validation/test splits.
+- Implement a PyTorch Dataset class that reads images using the CSV.
+
+
+Phase 2 — Configuration
+
+- Create a config.yaml.
+- Make image size, batch size, dataset path, model name, etc., configurable.
+
+
+Phase 3 — First Model
+
+- Implement one model (I'd start with EfficientNet-B0 or EfficientNetV2 because they're straightforward and      provide a strong baseline).
+- Train it end-to-end.
+- Save checkpoints and metrics.
+
+
+Phase 4 — Evaluation
+
+- Compute confusion matrix, precision, recall, F1, ROC/AUC (where appropriate), and inference time.
+- Save plots and metrics automatically for each experiment.
+
+
+Phase 5 — Model Factory
+
+- Add ViT.
+- Later add PatchCore.
+- Later add PaDiM.
