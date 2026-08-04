@@ -1,31 +1,13 @@
-# Python
-__pycache__/
-*.pyc
-
-# Virtual Environment
 .venv/
 
-# Jupyter
+__pycache__/
+
 .ipynb_checkpoints/
 
-# VSCode
-.vscode/
-
-# Mac
-.DS_Store
-
-# Models
-*.pt
-*.pth
-
-# Logs
-logs/
-
-# Experiments
 experiments/
 
-# Large datasets
-data/
+*.pt
 
-# TensorBoard
-runs/
+*.pth
+
+data/
