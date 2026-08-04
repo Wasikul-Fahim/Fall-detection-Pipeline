@@ -4,7 +4,7 @@ Entry point for Vision Transformer training.
 
 from torch import nn
 from torch.optim import AdamW
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from torchvision import transforms
 
 from configs.vit_config import ViTConfig
@@ -38,17 +38,14 @@ def main() -> None:
         ]
     )
 
-    dataset = ImageDataset(
-        root_dir=config.data_dir,
+    train_dataset = ImageDataset(
+        csv_file="metadata/train.csv",
         transform=transform,
     )
 
-    train_size = int(0.8 * len(dataset))
-    val_size = len(dataset) - train_size
-
-    train_dataset, val_dataset = random_split(
-        dataset,
-        [train_size, val_size],
+    val_dataset = ImageDataset(
+        csv_file="metadata/val.csv",
+        transform=transform,
     )
 
     train_loader = DataLoader(

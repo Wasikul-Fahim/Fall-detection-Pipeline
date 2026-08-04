@@ -18,92 +18,58 @@ dataset_root/
 The dataset infers labels from the top-level class folders (ADL/Fall).
 """
 
+
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Callable
 
+from cv2 import transform
+import pandas as pd
 from PIL import Image
+
 from torch import Tensor
 from torch.utils.data import Dataset
 
 
 class ImageDataset(Dataset):
     """
-    Generic image dataset.
+    Dataset backed by a metadata CSV.
 
     Parameters
     ----------
-    root_dir : str | Path
-        Root dataset directory.
+    csv_file : str | Path
+        CSV file containing image paths and labels.
 
     transform : Callable | None
         Image transformation pipeline.
     """
 
-    CLASS_TO_INDEX = {
-        "ADL": 0,
-        "Fall": 1,
-    }
-
-    VALID_EXTENSIONS = {
-        ".png",
-        ".jpg",
-        ".jpeg",
-        ".bmp",
-    }
-
     def __init__(
         self,
-        root_dir: str | Path,
+        csv_file: str | Path,
         transform: Callable | None = None,
     ) -> None:
 
-        self.root_dir = Path(root_dir)
-        self.transform = transform
+        self.data = pd.read_csv(csv_file)
 
-        self.samples: list[tuple[Path, int]] = []
-
-        self._index_dataset()
-
-    def _index_dataset(self) -> None:
-        """
-        Index every image in the dataset.
-        """
-
-        if not self.root_dir.exists():
-            raise FileNotFoundError(
-                f"Dataset not found: {self.root_dir}"
-            )
-
-        for class_name, label in self.CLASS_TO_INDEX.items():
-
-            class_dir = self.root_dir / class_name
-
-            if not class_dir.exists():
-                continue
-
-            for image_path in class_dir.rglob("*"):
-
-                if image_path.suffix.lower() in self.VALID_EXTENSIONS:
-                    self.samples.append((image_path, label))
-
-        if not self.samples:
-            raise RuntimeError("No images found in dataset.")
+    self.transform = transform
 
     def __len__(self) -> int:
-        return len(self.samples)
+        return len(self.data)
 
     def __getitem__(
-        self,
-        index: int,
-    ) -> tuple[Tensor, int]:
+    self,
+    index: int,
+) -> tuple[Tensor, int]:
+    
+    row = self.data.iloc[index]
 
-        image_path, label = self.samples[index]
+    image = Image.open(
+        row["image_path"]
+    ).convert("RGB")
 
-        image = Image.open(image_path).convert("RGB")
+    if self.transform is not None:
+        image = self.transform(image)
 
-        if self.transform is not None:
-            image = self.transform(image)
-
-        return image, label
+    return image, int(row["label"])
