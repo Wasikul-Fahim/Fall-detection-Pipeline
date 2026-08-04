@@ -1,0 +1,36 @@
+dataset:
+
+    image_size: 384
+
+    batch_size: 32
+
+    train_dir: data/train
+
+    val_dir: data/val
+
+model:
+
+    name: vit
+
+training:
+
+    epochs: 50
+
+    optimizer: adamw
+
+    lr: 0.0001
+
+augmentation:
+
+    random_flip: True
+
+    color_jitter: False
+
+evaluation:
+
+    metrics:
+        - accuracy
+        - precision
+        - recall
+        - f1
+        - auc

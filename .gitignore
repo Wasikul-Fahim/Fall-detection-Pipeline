@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VSCode
+.vscode/
+
+# Mac
+.DS_Store
+
+# Models
+*.pt
+*.pth
+
+# Logs
+logs/
+
+# Experiments
+experiments/
+
+# Large datasets
+data/
+
+# TensorBoard
+runs/
