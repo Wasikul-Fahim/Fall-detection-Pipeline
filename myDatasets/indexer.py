@@ -47,22 +47,24 @@ def build_metadata(dataset_root, output_csv):
 
     rows = []
 
-    for img in dataset_root.rglob("*.png"):
-        parts = img.relative_to(dataset_root).parts
+    count = 0
 
-        # Only index Daily Living
+    for img in dataset_root.rglob("*.png"):
+        count += 1
+
+        if count % 500 == 0:
+            print(f"Visited {count} images")
+
+        parts = img.relative_to(dataset_root).parts
+    
         if parts[0] != "Daily Living":
             continue
 
         activity = parts[1]
         subject = parts[2]
 
-        try:
-            label = CLASS_TO_LABEL[activity]
-        except KeyError:
-            print("Missing activity:", activity)
-            continue
-        print(activity, label)
+        label = CLASS_TO_LABEL[activity]
+
         rows.append(
             {
                 "image_path": str(img),
@@ -71,7 +73,9 @@ def build_metadata(dataset_root, output_csv):
                 "subject": subject,
             }
         )
-        print("Rows:", len(rows))
+
+    print("Visited total:", count)
+    print("Indexed:", len(rows))
 
     df = pd.DataFrame(rows)
 
