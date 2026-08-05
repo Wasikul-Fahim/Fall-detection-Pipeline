@@ -1,0 +1,402 @@
+# Research Framework Context (Continuation)
+
+I am building a **modular deep learning research framework** for my thesis on **Human Activity Recognition / Fall Detection**. The framework should be reusable for multiple models (ViT, EfficientNet, ConvNeXt, Swin, PatchCore, PaDiM, etc.) and should follow professional software engineering practices.
+
+Please use this context when answering future questions.
+
+---
+
+# Overall Goal
+
+The framework should:
+
+* Be modular and maintainable.
+* Follow SOLID principles where appropriate.
+* Keep modules independent.
+* Use type hints.
+* Use docstrings.
+* Avoid duplicated code.
+* Keep functions small.
+* Be easily extensible.
+* Run on:
+
+  * Local MacBook (development)
+  * Google Colab
+  * Lab PCs with RTX 4080 / RTX 4090 GPUs
+* Eventually support datasets ranging from ~15k images to over 500k images.
+
+---
+
+# Original Development Roadmap
+
+Phase 0
+
+* Initial prototype (currently implementing ViT)
+
+Phase 1
+Dataset Module
+
+Phase 2
+Configuration System
+
+Phase 3
+Training Framework
+
+Phase 4
+Model Module
+
+Phase 5
+Evaluation
+
+Phase 6
+Experiments
+
+---
+
+# Architecture We Decided
+
+The project structure is:
+
+ResearchFramework/
+
+configs/
+
+* **init**.py
+* vit_config.py
+
+datasets/
+
+* **init**.py
+* image_dataset.py
+* indexer.py
+* splitter.py
+
+models/
+
+* **init**.py
+* vit.py
+
+training/
+
+* **init**.py
+* engine.py
+* metrics.py
+
+utils/
+
+* **init**.py
+* common.py
+
+scripts/
+
+* train_vit.py
+
+metadata/
+
+* metadata.csv
+* train.csv
+* val.csv
+* test.csv
+
+data/
+
+* Mosaic_ADL_2x2/
+
+---
+
+# Dataset Structure
+
+The dataset hierarchy is:
+
+Mosaic_ADL_2x2/
+
+ADL/
+Walking/
+Subject01/
+image001.png
+Subject02/
+...
+
+Fall/
+ForwardFall/
+Subject03/
+image001.png
+...
+
+The structure is:
+
+Activity Type
+→ Activity
+→ Subject
+→ Images
+
+---
+
+# Important Design Decision
+
+Initially we built ImageDataset by recursively scanning folders.
+
+Later we realized this is NOT suitable for:
+
+* subject-wise splitting
+* reproducibility
+* scalability
+* fair comparison between models
+
+So we redesigned the Dataset Module.
+
+Current intended architecture:
+
+Dataset Folder
+
+↓
+
+indexer.py
+
+↓
+
+metadata.csv
+
+↓
+
+splitter.py
+
+↓
+
+train.csv
+val.csv
+test.csv
+
+↓
+
+ImageDataset (reads CSV)
+
+↓
+
+DataLoader
+
+---
+
+# image_dataset.py
+
+Originally:
+
+ImageDataset(root_dir=...)
+
+Now redesigned to:
+
+ImageDataset(csv_file=...)
+
+The dataset should:
+
+* read a CSV
+* load image
+* apply transforms
+* return image + label
+
+It should NOT:
+
+* scan folders
+* split dataset
+* know anything about ViT
+
+---
+
+# indexer.py
+
+Purpose:
+
+Scan the dataset once.
+
+Generate metadata.csv.
+
+Each row contains:
+
+image_path
+label
+activity_type
+activity
+subject
+
+---
+
+# splitter.py
+
+Purpose:
+
+Perform SUBJECT-WISE split.
+
+Generate
+
+train.csv
+val.csv
+test.csv
+
+No random image split.
+
+No data leakage.
+
+---
+
+# Why random_split() was removed
+
+Initially train_vit.py used:
+
+train_dataset, val_dataset = random_split(...)
+
+This is NOT acceptable for thesis experiments because images from the same subject can appear in both training and validation.
+
+Since my goal is to evaluate ViT for the thesis (not just test the pipeline), we decided to remove random_split() entirely.
+
+---
+
+# Current train_vit.py
+
+Instead of
+
+dataset = ImageDataset(root_dir=...)
+
+random_split(...)
+
+it should create
+
+train_dataset = ImageDataset(csv_file="metadata/train.csv")
+
+val_dataset = ImageDataset(csv_file="metadata/val.csv")
+
+---
+
+# Model Module
+
+models/vit.py contains only
+
+build_vit()
+
+No optimizer.
+
+No scheduler.
+
+No training loop.
+
+Later a Model Factory will call build_vit().
+
+---
+
+# Training Module
+
+training/engine.py contains
+
+Trainer class
+
+Responsibilities:
+
+* train_one_epoch()
+* validate()
+* fit()
+
+No dataset logic.
+
+No model construction.
+
+---
+
+# Metrics
+
+Currently
+
+accuracy()
+
+Only accuracy is implemented because this is the initial ViT experiment.
+
+Future phases will add
+
+* precision
+* recall
+* F1
+* confusion matrix
+* ROC
+* PR curve
+
+---
+
+# Utilities
+
+utils/common.py contains
+
+* seed_everything()
+* get_device()
+* create_directory()
+* save_checkpoint()
+* load_checkpoint()
+
+---
+
+# Configuration
+
+configs/vit_config.py currently contains
+
+ViTConfig dataclass
+
+Fields include
+
+data_dir
+image_size
+batch_size
+num_workers
+learning_rate
+epochs
+pretrained
+checkpoint_dir
+
+Eventually this will be replaced by YAML in Phase 2.
+
+---
+
+# Google Colab Workflow
+
+The intended workflow is:
+
+1. Mount Google Drive.
+
+2. Clone GitHub repository.
+
+3. cd into repository.
+
+4. Install dependencies if necessary.
+
+5. Generate metadata.csv.
+
+6. Generate train.csv / val.csv / test.csv.
+
+7. Run train_vit.py.
+
+---
+
+# Current Issue
+
+I am currently facing issues while starting training.
+
+One specific error I encountered earlier was:
+
+ImportError:
+cannot import name 'build_metadata' from 'datasets'
+
+We suspected one of these:
+
+* datasets/**init**.py not exporting build_metadata
+* indexer.py missing
+* outdated GitHub repository cloned in Colab
+* Python import cache
+* incorrect package structure
+
+I need help debugging the current implementation and getting the ViT experiment running correctly in Google Colab.
+
+---
+
+# Goal
+
+My immediate goal is NOT to test whether the pipeline works.
+
+My goal is to perform a scientifically valid Vision Transformer experiment for my thesis using subject-wise train/validation/test splits.
+
+Please prioritize correctness of the experimental methodology over quick prototype code.

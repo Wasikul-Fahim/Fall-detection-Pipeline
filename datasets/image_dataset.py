@@ -46,11 +46,10 @@ class ImageDataset(Dataset):
     """
 
     def __init__(
-        self,
-        csv_file: str | Path,
-        transform: Callable | None = None,
+            self,
+            csv_file: str | Path,
+            transform: Callable | None = None,
     ) -> None:
-
         self.data = pd.read_csv(csv_file)
 
     self.transform = transform
@@ -59,17 +58,44 @@ class ImageDataset(Dataset):
         return len(self.data)
 
     def __getitem__(
-    self,
-    index: int,
-) -> tuple[Tensor, int]:
-    
-    row = self.data.iloc[index]
+            self,
+            index: int,
+    ) -> tuple[Tensor, int]:
+        row = self.data.iloc[index]
 
-    image = Image.open(
-        row["image_path"]
-    ).convert("RGB")
+        image = Image.open(
+            row["image_path"]
+        ).convert("RGB")
 
-    if self.transform is not None:
-        image = self.transform(image)
+        if self.transform is not None:
+            image = self.transform(image)
 
-    return image, int(row["label"])
+        return image, int(row["label"])class ImageDataset(Dataset):
+
+    def __init__(
+        self,
+        csv_file: str | Path,
+        transform: Callable | None = None,
+    ) -> None:
+
+        self.data = pd.read_csv(csv_file)
+        self.transform = transform
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def __getitem__(
+        self,
+        index: int,
+    ) -> tuple[Tensor, int]:
+
+        row = self.data.iloc[index]
+
+        image = Image.open(
+            row["image_path"]
+        ).convert("RGB")
+
+        if self.transform is not None:
+            image = self.transform(image)
+
+        return image, int(row["label"])
