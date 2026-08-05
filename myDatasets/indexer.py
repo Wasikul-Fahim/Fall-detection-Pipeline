@@ -57,8 +57,12 @@ def build_metadata(dataset_root, output_csv):
         activity = parts[1]
         subject = parts[2]
 
-        label = CLASS_TO_LABEL[activity]
-
+        try:
+            label = CLASS_TO_LABEL[activity]
+        except KeyError:
+            print("Missing activity:", activity)
+            continue
+        print(activity, label)
         rows.append(
             {
                 "image_path": str(img),
@@ -67,6 +71,7 @@ def build_metadata(dataset_root, output_csv):
                 "subject": subject,
             }
         )
+        print("Rows:", len(rows))
 
     df = pd.DataFrame(rows)
 
