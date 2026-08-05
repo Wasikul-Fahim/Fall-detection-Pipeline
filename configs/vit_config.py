@@ -18,7 +18,7 @@ class ViTConfig:
     # ------------------------------------------------------------------
     # Dataset
     # ------------------------------------------------------------------
-    data_dir: str = "/content/drive/MyDrive/datasets/Mosaic_ADL_2x2/Daily Living"
+    data_dir: str = "/content/drive/MyDrive/datasets/Mosaic_ADL_2x2/"
     image_size: int = 224
     batch_size: int = 32
     num_workers: int = 4

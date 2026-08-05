@@ -50,20 +50,14 @@ def build_metadata(dataset_root, output_csv):
     for img in dataset_root.rglob("*.png"):
         parts = img.relative_to(dataset_root).parts
 
-        # Fall/SA21/image.png
-        if parts[0] == "Fall":
-            label = 1
-            activity = "Fall"
-            subject = parts[1]
-
-        # Daily Living/Walking_Slow/SA01/image.png
-        elif parts[0] == "Daily Living":
-            label = 0
-            activity = parts[1]
-            subject = parts[2]
-
-        else:
+        # Only index Daily Living
+        if parts[0] != "Daily Living":
             continue
+
+        activity = parts[1]
+        subject = parts[2]
+
+        label = CLASS_TO_LABEL[activity]
 
         rows.append(
             {
