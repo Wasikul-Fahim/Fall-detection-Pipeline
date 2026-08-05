@@ -1,0 +1,15 @@
+# Vision Transformer
+timm>=1.0.0
+
+# Image processing
+opencv-python-headless>=4.10
+
+# Data handling
+pandas>=2.2,<3.0
+
+# Utilities
+PyYAML>=6.0
+tqdm>=4.66
+
+# Optional (only if you use Hugging Face in the future)
+# huggingface_hub>=0.24
