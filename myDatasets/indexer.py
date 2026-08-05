@@ -9,7 +9,7 @@ import csv
 
 
 CLASS_TO_LABEL = {
-    "ADL": 0,
+    "Daily Living": 0,
     "Fall": 1,
 }
 
@@ -21,65 +21,47 @@ VALID_EXTENSIONS = {
 }
 
 
-def build_metadata(
-    dataset_root: str | Path,
-    output_csv: str | Path,
-) -> None:
+from pathlib import Path
+import pandas as pd
 
+
+def build_metadata(dataset_root, output_csv):
     dataset_root = Path(dataset_root)
-    output_csv = Path(output_csv)
-
-    output_csv.parent.mkdir(parents=True, exist_ok=True)
 
     rows = []
 
-    for activity_type in CLASS_TO_LABEL:
+    for img in dataset_root.rglob("*.png"):
+        parts = img.relative_to(dataset_root).parts
 
-        type_dir = dataset_root / activity_type
+        # Fall/SA21/image.png
+        if parts[0] == "Fall":
+            label = 1
+            activity = "Fall"
+            subject = parts[1]
 
-        if not type_dir.exists():
+        # Daily Living/Walking_Slow/SA01/image.png
+        elif parts[0] == "Daily Living":
+            label = 0
+            activity = parts[1]
+            subject = parts[2]
+
+        else:
             continue
 
-        for activity_dir in type_dir.iterdir():
-
-            if not activity_dir.is_dir():
-                continue
-
-            for subject_dir in activity_dir.iterdir():
-
-                if not subject_dir.is_dir():
-                    continue
-
-                for image in subject_dir.iterdir():
-
-                    if image.suffix.lower() not in VALID_EXTENSIONS:
-                        continue
-
-                    rows.append(
-                        {
-                            "image_path": str(image.resolve()),
-                            "label": CLASS_TO_LABEL[activity_type],
-                            "activity_type": activity_type,
-                            "activity": activity_dir.name,
-                            "subject": subject_dir.name,
-                        }
-                    )
-
-    with open(output_csv, "w", newline="") as f:
-
-        writer = csv.DictWriter(
-            f,
-            fieldnames=[
-                "image_path",
-                "label",
-                "activity_type",
-                "activity",
-                "subject",
-            ],
+        rows.append(
+            {
+                "image_path": str(img),
+                "label": label,
+                "activity": activity,
+                "subject": subject,
+            }
         )
 
-        writer.writeheader()
+    df = pd.DataFrame(rows)
 
-        writer.writerows(rows)
+    output_csv = Path(output_csv)
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
 
-    print(f"Indexed {len(rows)} images.")
+    df.to_csv(output_csv, index=False)
+
+    print(f"Indexed {len(df)} images.")
